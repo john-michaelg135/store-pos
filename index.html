@@ -9,49 +9,44 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-      /* 内联样式确保主题色立即生效，避免闪烁 */
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
       }
-      html.light,
-      html.light body {
-        background-color: #ffffff !important;
-        color: #000000;
+      html, html body {
+        background-color: #FAFAF8;
+        color: #1a1a1a;
       }
-      html.dark,
-      html.dark body {
-        background-color: #1a1a1a !important;
-        color: #ffffff;
+      html.dark, html.dark body {
+        background-color: #0f0f0f;
+        color: #e5e5e5;
       }
     </style>
     <script>
-      // 在 React 加载前立即设置主题，避免闪烁
+      // Apply theme before React loads to prevent flash
       (function () {
-        const isInIframe = window.self !== window.top;
-
-        function applyThemeToDOM(theme) {
-          document.documentElement.classList.remove("light", "dark");
-          document.documentElement.classList.add(theme);
-          document.documentElement.setAttribute("data-theme", theme);
+        const stored = localStorage.getItem('tindahan_theme') || 'auto';
+        let resolved = stored;
+        if (stored === 'auto') {
+          resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
+        document.documentElement.classList.add(resolved);
+        document.documentElement.setAttribute('data-theme', resolved);
 
-        if (isInIframe) {
-          // 监听父窗口主动推送的主题消息
+        // Listen for parent iframe theme messages
+        if (window.self !== window.top) {
           window.addEventListener("message", function (event) {
             if (event.data && typeof event.data.theme === "string") {
               const theme = event.data.theme;
               if (theme === "light" || theme === "dark") {
-                applyThemeToDOM(theme);
+                document.documentElement.classList.remove("light", "dark");
+                document.documentElement.classList.add(theme);
+                document.documentElement.setAttribute("data-theme", theme);
               }
             }
           });
-        } else {
-          // 非 iframe 环境，使用默认 light 主题
-          applyThemeToDOM("light");
         }
       })();
     </script>

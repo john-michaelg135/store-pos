@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Search, Plus, Minus, Trash2, ShoppingBag, Banknote, X } from 'lucide-react';
 import { Product, CartItem, Transaction } from '../types';
 import { getProducts, saveProducts, saveTransaction, generateId } from '../store';
+import ProductImage from './ProductImage';
 
 export default function POSView() {
   const [products, setProducts] = useState<Product[]>(getProducts());
@@ -86,7 +87,6 @@ export default function POSView() {
       timestamp: Date.now(),
     };
 
-    // Update stock
     const updatedProducts = products.map(p => {
       const cartItem = cart.find(item => item.product.id === p.id);
       if (cartItem) {
@@ -116,13 +116,13 @@ export default function POSView() {
       <div className="flex-1 p-4 lg:p-6">
         {/* Search */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#808080]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#808080] dark:text-[#666]" />
           <input
             type="text"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-[#808080]/30 rounded-[2px] bg-white text-sm focus:outline-none focus:border-[#000] focus:ring-1 focus:ring-[#000] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 border border-[#808080]/30 dark:border-[#444] rounded-[2px] bg-white dark:bg-[#1a1a1a] text-[#1a1a1a] dark:text-white text-sm focus:outline-none focus:border-[#000] dark:focus:border-white focus:ring-1 focus:ring-[#000] dark:focus:ring-white transition-all"
           />
         </div>
 
@@ -134,8 +134,8 @@ export default function POSView() {
               onClick={() => setActiveCategory(cat)}
               className={`px-3 py-1.5 text-xs font-medium rounded-[2px] whitespace-nowrap transition-all ${
                 activeCategory === cat
-                  ? 'bg-[#000] text-white'
-                  : 'bg-[#F5F1E8] text-[#808080] hover:bg-[#B38B6D]/20'
+                  ? 'bg-[#000] dark:bg-white text-white dark:text-[#000]'
+                  : 'bg-[#F5F1E8] dark:bg-[#2a2a2a] text-[#808080] dark:text-[#999] hover:bg-[#B38B6D]/20 dark:hover:bg-[#3a3a3a]'
               }`}
             >
               {cat}
@@ -149,23 +149,21 @@ export default function POSView() {
             <button
               key={product.id}
               onClick={() => addToCart(product)}
-              className="relative flex flex-col items-start p-3 border border-[#808080]/20 rounded-[2px] bg-white hover:border-[#000] hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all text-left group active:scale-[0.98]"
+              className="relative flex flex-col items-start p-2 lg:p-3 border border-[#808080]/20 dark:border-[#333] rounded-[2px] bg-white dark:bg-[#1a1a1a] hover:border-[#000] dark:hover:border-white hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_12px_rgba(255,255,255,0.03)] transition-all text-left group active:scale-[0.98]"
             >
-              <span className="text-xs text-[#808080] uppercase tracking-wider">{product.category}</span>
-              <span className="text-sm font-medium mt-1 leading-tight">{product.name}</span>
-              <div className="flex items-center justify-between w-full mt-2">
-                <span className="text-sm font-bold">₱{product.price.toFixed(2)}</span>
-                <span className="text-[10px] text-[#808080]">{product.stock} left</span>
-              </div>
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Plus className="w-4 h-4 text-[#000]" />
+              <ProductImage src={product.image} category={product.category} alt={product.name} size="lg" />
+              <span className="text-[10px] text-[#808080] dark:text-[#666] uppercase tracking-wider mt-2">{product.category}</span>
+              <span className="text-sm font-medium mt-0.5 leading-tight text-[#1a1a1a] dark:text-white truncate w-full">{product.name}</span>
+              <div className="flex items-center justify-between w-full mt-1.5">
+                <span className="text-sm font-bold text-[#1a1a1a] dark:text-white">₱{product.price.toFixed(2)}</span>
+                <span className="text-[10px] text-[#808080] dark:text-[#666]">{product.stock} left</span>
               </div>
             </button>
           ))}
         </div>
 
         {filteredProducts.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-[#808080]">
+          <div className="flex flex-col items-center justify-center py-16 text-[#808080] dark:text-[#666]">
             <ShoppingBag className="w-12 h-12 mb-3 opacity-30" />
             <p className="text-sm">No products found</p>
           </div>
@@ -173,48 +171,49 @@ export default function POSView() {
       </div>
 
       {/* Cart Panel */}
-      <div className="lg:w-[380px] border-t lg:border-t-0 lg:border-l border-[#808080]/20 bg-[#F5F1E8]/50 flex flex-col">
-        <div className="p-4 border-b border-[#808080]/20">
+      <div className="lg:w-[380px] border-t lg:border-t-0 lg:border-l border-[#808080]/20 dark:border-[#333] bg-[#F5F1E8]/30 dark:bg-[#111]/50 flex flex-col transition-colors">
+        <div className="p-4 border-b border-[#808080]/20 dark:border-[#333]">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider">Cart</h2>
-            <span className="text-xs text-[#808080]">{cartCount} items</span>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#1a1a1a] dark:text-white">Cart</h2>
+            <span className="text-xs text-[#808080] dark:text-[#666]">{cartCount} items</span>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-[#808080]">
+            <div className="flex flex-col items-center justify-center py-12 text-[#808080] dark:text-[#666]">
               <ShoppingBag className="w-10 h-10 mb-2 opacity-30" />
               <p className="text-xs">Cart is empty</p>
             </div>
           ) : (
             cart.map(item => (
-              <div key={item.product.id} className="flex items-center gap-3 p-2 bg-white rounded-[2px] border border-[#808080]/10">
+              <div key={item.product.id} className="flex items-center gap-3 p-2 bg-white dark:bg-[#1a1a1a] rounded-[2px] border border-[#808080]/10 dark:border-[#333] transition-colors">
+                <ProductImage src={item.product.image} category={item.product.category} alt={item.product.name} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{item.product.name}</p>
-                  <p className="text-xs text-[#808080]">₱{item.product.price} each</p>
+                  <p className="text-sm font-medium truncate text-[#1a1a1a] dark:text-white">{item.product.name}</p>
+                  <p className="text-xs text-[#808080] dark:text-[#666]">₱{item.product.price} each</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => updateQuantity(item.product.id, -1)}
-                    className="w-6 h-6 flex items-center justify-center border border-[#808080]/30 rounded-[2px] hover:bg-[#F5F1E8] transition-colors"
+                    className="w-6 h-6 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#1a1a1a] dark:text-white transition-colors"
                   >
                     <Minus className="w-3 h-3" />
                   </button>
-                  <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
+                  <span className="w-6 text-center text-sm font-medium text-[#1a1a1a] dark:text-white">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.product.id, 1)}
-                    className="w-6 h-6 flex items-center justify-center border border-[#808080]/30 rounded-[2px] hover:bg-[#F5F1E8] transition-colors"
+                    className="w-6 h-6 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#1a1a1a] dark:text-white transition-colors"
                   >
                     <Plus className="w-3 h-3" />
                   </button>
                 </div>
-                <span className="text-sm font-bold w-16 text-right">
+                <span className="text-sm font-bold w-16 text-right text-[#1a1a1a] dark:text-white">
                   ₱{(item.product.price * item.quantity).toFixed(2)}
                 </span>
                 <button
                   onClick={() => removeFromCart(item.product.id)}
-                  className="w-6 h-6 flex items-center justify-center text-[#808080] hover:text-red-500 transition-colors"
+                  className="w-6 h-6 flex items-center justify-center text-[#808080] dark:text-[#666] hover:text-red-500 transition-colors"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -224,15 +223,15 @@ export default function POSView() {
         </div>
 
         {/* Cart Footer */}
-        <div className="p-4 border-t border-[#808080]/20 space-y-3">
+        <div className="p-4 border-t border-[#808080]/20 dark:border-[#333] space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#808080]">Total</span>
-            <span className="text-xl font-bold">₱{cartTotal.toFixed(2)}</span>
+            <span className="text-sm text-[#808080] dark:text-[#666]">Total</span>
+            <span className="text-xl font-bold text-[#1a1a1a] dark:text-white">₱{cartTotal.toFixed(2)}</span>
           </div>
           <button
             onClick={handleCheckout}
             disabled={cart.length === 0}
-            className="w-full py-3 bg-[#000] text-white text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] active:translate-y-[1px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-[#000] dark:bg-white text-white dark:text-[#000] text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] active:translate-y-[1px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
             CHARGE — ₱{cartTotal.toFixed(2)}
           </button>
@@ -242,27 +241,27 @@ export default function POSView() {
       {/* Checkout Modal */}
       {showCheckout && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-[4px] w-full max-w-sm p-6 space-y-4">
+          <div className="bg-white dark:bg-[#1a1a1a] rounded-[4px] w-full max-w-sm p-6 space-y-4 border border-[#808080]/20 dark:border-[#333]">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold">Checkout</h3>
-              <button onClick={() => setShowCheckout(false)} className="text-[#808080] hover:text-[#000]">
+              <h3 className="text-lg font-bold text-[#1a1a1a] dark:text-white">Checkout</h3>
+              <button onClick={() => setShowCheckout(false)} className="text-[#808080] dark:text-[#666] hover:text-[#000] dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="text-center py-3 border border-[#808080]/20 rounded-[2px]">
-              <p className="text-xs text-[#808080] uppercase tracking-wider">Total Amount</p>
-              <p className="text-3xl font-bold mt-1">₱{cartTotal.toFixed(2)}</p>
+            <div className="text-center py-3 border border-[#808080]/20 dark:border-[#333] rounded-[2px]">
+              <p className="text-xs text-[#808080] dark:text-[#666] uppercase tracking-wider">Total Amount</p>
+              <p className="text-3xl font-bold mt-1 text-[#1a1a1a] dark:text-white">₱{cartTotal.toFixed(2)}</p>
             </div>
 
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider text-[#808080] mb-1 block">Cash Received</label>
+              <label className="text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666] mb-1 block">Cash Received</label>
               <input
                 type="number"
                 value={cashInput}
                 onChange={(e) => setCashInput(e.target.value)}
                 placeholder="0.00"
-                className="w-full px-4 py-3 border border-[#808080]/30 rounded-[2px] text-2xl font-bold text-center focus:outline-none focus:border-[#000] focus:ring-1 focus:ring-[#000]"
+                className="w-full px-4 py-3 border border-[#808080]/30 dark:border-[#444] rounded-[2px] text-2xl font-bold text-center bg-white dark:bg-[#0f0f0f] text-[#1a1a1a] dark:text-white focus:outline-none focus:border-[#000] dark:focus:border-white focus:ring-1 focus:ring-[#000] dark:focus:ring-white"
                 autoFocus
               />
             </div>
@@ -272,7 +271,7 @@ export default function POSView() {
                 <button
                   key={amount}
                   onClick={() => setCashInput(amount.toString())}
-                  className="py-2 text-sm font-medium border border-[#808080]/30 rounded-[2px] hover:bg-[#F5F1E8] transition-colors"
+                  className="py-2 text-sm font-medium border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#1a1a1a] dark:text-white transition-colors"
                 >
                   ₱{amount}
                 </button>
@@ -280,8 +279,8 @@ export default function POSView() {
             </div>
 
             {!isNaN(parseFloat(cashInput)) && parseFloat(cashInput) >= cartTotal && (
-              <div className="text-center py-2 bg-[#F5F1E8] rounded-[2px]">
-                <p className="text-xs text-[#808080]">Change</p>
+              <div className="text-center py-2 bg-[#F5F1E8] dark:bg-[#2a2a2a] rounded-[2px]">
+                <p className="text-xs text-[#808080] dark:text-[#666]">Change</p>
                 <p className="text-xl font-bold text-[#B38B6D]">₱{(parseFloat(cashInput) - cartTotal).toFixed(2)}</p>
               </div>
             )}
@@ -289,7 +288,7 @@ export default function POSView() {
             <button
               onClick={completeSale}
               disabled={!cashInput || isNaN(parseFloat(cashInput)) || parseFloat(cashInput) < cartTotal}
-              className="w-full py-3 bg-[#000] text-white text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] active:translate-y-[1px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-[#000] dark:bg-white text-white dark:text-[#000] text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] active:translate-y-[1px] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Banknote className="w-4 h-4 inline mr-2" />
               COMPLETE SALE
@@ -301,46 +300,46 @@ export default function POSView() {
       {/* Receipt Modal */}
       {lastTransaction && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-[4px] w-full max-w-sm p-6 space-y-4">
-            <div className="text-center border-b border-dashed border-[#808080]/30 pb-4">
-              <h3 className="text-lg font-bold">TINDAHAN</h3>
-              <p className="text-xs text-[#808080]">Sari Sari Store</p>
-              <p className="text-xs text-[#808080] mt-1">
+          <div className="bg-white dark:bg-[#1a1a1a] rounded-[4px] w-full max-w-sm p-6 space-y-4 border border-[#808080]/20 dark:border-[#333]">
+            <div className="text-center border-b border-dashed border-[#808080]/30 dark:border-[#444] pb-4">
+              <h3 className="text-lg font-bold text-[#1a1a1a] dark:text-white">TINDAHAN</h3>
+              <p className="text-xs text-[#808080] dark:text-[#666]">Sari Sari Store</p>
+              <p className="text-xs text-[#808080] dark:text-[#666] mt-1">
                 {new Date(lastTransaction.timestamp).toLocaleString('en-PH')}
               </p>
             </div>
 
             <div className="space-y-1">
               {lastTransaction.items.map(item => (
-                <div key={item.product.id} className="flex justify-between text-sm">
+                <div key={item.product.id} className="flex justify-between text-sm text-[#1a1a1a] dark:text-white">
                   <span>{item.product.name} x{item.quantity}</span>
                   <span>₱{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-dashed border-[#808080]/30 pt-3 space-y-1">
-              <div className="flex justify-between text-sm font-bold">
+            <div className="border-t border-dashed border-[#808080]/30 dark:border-[#444] pt-3 space-y-1">
+              <div className="flex justify-between text-sm font-bold text-[#1a1a1a] dark:text-white">
                 <span>TOTAL</span>
                 <span>₱{lastTransaction.total.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-[#808080] dark:text-[#999]">
                 <span>Cash</span>
                 <span>₱{lastTransaction.cash.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm font-bold">
+              <div className="flex justify-between text-sm font-bold text-[#1a1a1a] dark:text-white">
                 <span>Change</span>
                 <span>₱{lastTransaction.change.toFixed(2)}</span>
               </div>
             </div>
 
-            <div className="text-center text-xs text-[#808080] pt-2">
+            <div className="text-center text-xs text-[#808080] dark:text-[#666] pt-2">
               <p>Salamat sa pagbili!</p>
             </div>
 
             <button
               onClick={closeReceipt}
-              className="w-full py-3 bg-[#000] text-white text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] transition-all"
+              className="w-full py-3 bg-[#000] dark:bg-white text-white dark:text-[#000] text-sm font-semibold rounded-[2px] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] transition-all"
             >
               NEW TRANSACTION
             </button>
