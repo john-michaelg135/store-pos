@@ -1,12 +1,23 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Clock, Receipt, ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import { Clock, Receipt, ChevronDown, ChevronUp, Filter, Trash2, X, AlertTriangle } from 'lucide-react';
 import { Transaction } from '../types';
-import { getTransactions } from '../store';
+import { getTransactions, clearTransactions } from '../store';
+
+interface ThemedModalState {
+  type: 'danger' | 'warning' | 'info' | 'success';
+  title: string;
+  message: string;
+  details?: string[];
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void;
+}
 
 export default function TransactionHistory() {
   const [transactions, setTransactions] = useState<Transaction[]>(getTransactions());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState('all');
+  const [modal, setModal] = useState<ThemedModalState | null>(null);
 
   useEffect(() => {
     const handleSync = () => setTransactions(getTransactions());
@@ -17,6 +28,16 @@ export default function TransactionHistory() {
       window.removeEventListener('tindahan:data-imported', handleSync);
     };
   }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && modal) {
+        setModal(null);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modal]);
 
   const filteredTransactions = useMemo(() => {
     const now = Date.now();
@@ -59,12 +80,43 @@ export default function TransactionHistory() {
     setExpandedId(prev => prev === id ? null : id);
   }
 
+  function handleClearHistory() {
+    setModal({
+      type: 'danger',
+      title: 'Clear Transaction History',
+      message: 'Are you sure you want to clear all transaction records? This will delete all sales history and reset revenue metrics.',
+      details: [
+        `${transactions.length} transactions will be permanently deleted`,
+        `Total sales recorded: ₱${stats.allTotal.toFixed(2)}`,
+        'This action cannot be undone unless you have a saved backup file',
+      ],
+      confirmLabel: 'Clear History',
+      cancelLabel: 'Cancel',
+      onConfirm: () => {
+        clearTransactions();
+        setTransactions([]);
+      },
+    });
+  }
+
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto w-full h-full lg:h-[calc(100dvh-64px)] flex flex-col min-h-0 lg:overflow-hidden">
       {/* Header */}
-      <div className="mb-4 shrink-0">
-        <h1 className="text-xl font-bold text-[#1a1a1a] dark:text-white">Transaction History</h1>
-        <p className="text-sm text-[#808080] dark:text-[#666]">{transactions.length} total transactions</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-[#1a1a1a] dark:text-white">Transaction History</h1>
+          <p className="text-sm text-[#808080] dark:text-[#666]">{transactions.length} total transactions</p>
+        </div>
+        {transactions.length > 0 && (
+          <button
+            onClick={handleClearHistory}
+            title="Clear all transaction history"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-red-50 dark:hover:bg-red-950/20 text-[#808080] dark:text-[#999] hover:text-red-500 transition-colors self-start sm:self-auto"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Clear History
+          </button>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -176,6 +228,77 @@ export default function TransactionHistory() {
           ))
         )}
       </div>
+
+      {/* Themed Confirmation Modal */}
+      {modal && (
+        <div
+          className="fixed inset-0 z-[400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          onClick={() => {
+            if (!modal.cancelLabel && modal.onConfirm) {
+              modal.onConfirm();
+            }
+            setModal(null);
+          }}
+        >
+          <div
+            className="bg-white dark:bg-[#1a1a1a] rounded-[4px] w-full max-w-md p-6 border border-[#808080]/20 dark:border-[#333] shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-[2px] flex items-center justify-center shrink-0 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-[#1a1a1a] dark:text-white">
+                  {modal.title}
+                </h3>
+                <p className="text-sm text-[#666] dark:text-[#aaa] mt-1 leading-relaxed">
+                  {modal.message}
+                </p>
+              </div>
+              <button
+                onClick={() => setModal(null)}
+                className="text-[#808080] dark:text-[#666] hover:text-[#000] dark:hover:text-white transition-colors p-1"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {modal.details && modal.details.length > 0 && (
+              <div className="bg-[#F5F1E8]/70 dark:bg-[#252525] p-3 rounded-[2px] border border-[#808080]/15 dark:border-[#3a3a3a] space-y-1.5 text-xs">
+                {modal.details.map((detail, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-[#444] dark:text-[#ccc]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#808080] dark:bg-[#777] shrink-0" />
+                    <span>{detail}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              {modal.cancelLabel && (
+                <button
+                  onClick={() => setModal(null)}
+                  className="px-4 py-2 border border-[#808080]/30 dark:border-[#444] text-xs font-semibold rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#1a1a1a] dark:text-white transition-colors"
+                >
+                  {modal.cancelLabel}
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  const action = modal.onConfirm;
+                  setModal(null);
+                  if (action) action();
+                }}
+                className="px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-[2px] transition-colors"
+              >
+                {modal.confirmLabel || 'OK'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

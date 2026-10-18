@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Plus, Edit3, Trash2, X, Package, Search, Image as ImageIcon, Upload, Download, RotateCcw, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Product } from '../types';
-import { getProducts, saveProducts, generateId, BASE_CATEGORIES, clearAllProducts, loadDemoProducts, exportBackup, importBackup } from '../store';
+import { getProducts, saveProducts, generateId, BASE_CATEGORIES, clearAllProducts, clearAllStoreData, getTransactions, loadDemoProducts, exportBackup, importBackup } from '../store';
 import ProductImage from './ProductImage';
 
 interface ThemedModalState {
@@ -160,18 +160,22 @@ export default function ProductManager() {
   }
 
   function handleClearAll() {
+    const txCount = getTransactions().length;
     setModal({
       type: 'danger',
-      title: 'Clear All Products',
-      message: 'Are you sure you want to clear all products? This will remove all items from inventory.',
+      title: 'Clear All Store Data',
+      message: 'Are you sure you want to clear all products and transaction history? This will completely reset your store.',
       details: [
-        `${products.length} products will be permanently removed`,
+        `${products.length} products will be removed from inventory`,
+        txCount > 0
+          ? `${txCount} transactions will be cleared from history`
+          : 'Transaction history is currently empty',
         'This action cannot be undone unless you have a saved backup file',
       ],
-      confirmLabel: 'Clear All',
+      confirmLabel: 'Clear All Data',
       cancelLabel: 'Cancel',
       onConfirm: () => {
-        clearAllProducts();
+        clearAllStoreData();
         setProducts([]);
       },
     });
@@ -317,16 +321,18 @@ export default function ProductManager() {
             Import
           </button>
 
-          {products.length > 0 ? (
+          {(products.length > 0 || getTransactions().length > 0) && (
             <button
               onClick={handleClearAll}
-              title="Clear all products from inventory"
+              title="Clear all products and transaction history"
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-red-50 dark:hover:bg-red-950/20 text-[#808080] dark:text-[#999] hover:text-red-500 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Clear All
             </button>
-          ) : (
+          )}
+
+          {products.length === 0 && (
             <button
               onClick={handleLoadDemo}
               title="Load sample demo products"

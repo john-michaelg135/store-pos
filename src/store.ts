@@ -76,10 +76,27 @@ export function saveProducts(products: Product[]): void {
 
 export function clearAllProducts(): void {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
+  window.dispatchEvent(new Event('storage'));
+  window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
+}
+
+export function clearTransactions(): void {
+  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify([]));
+  window.dispatchEvent(new Event('storage'));
+  window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
+}
+
+export function clearAllStoreData(): void {
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
+  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify([]));
+  window.dispatchEvent(new Event('storage'));
+  window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
 }
 
 export function loadDemoProducts(): Product[] {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaultProducts));
+  window.dispatchEvent(new Event('storage'));
+  window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
   return defaultProducts;
 }
 
