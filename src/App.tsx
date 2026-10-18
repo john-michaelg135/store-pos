@@ -33,11 +33,13 @@ export default function App() {
     }
   }
 
+  const isInternalScrollView = currentView === 'pos' || currentView === 'products' || currentView === 'history';
+
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] dark:bg-[#0f0f0f] flex flex-col transition-colors duration-200">
+    <div className={`min-h-[100dvh] ${isInternalScrollView ? 'lg:h-[100dvh] lg:overflow-hidden' : ''} bg-[#FAFAF8] dark:bg-[#0f0f0f] flex flex-col transition-colors duration-200`}>
       {/* Navigation */}
-      <nav className="sticky top-0 z-[100] bg-white dark:bg-[#1a1a1a] border-b border-[#808080]/20 dark:border-[#333] transition-colors duration-200">
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-6">
+      <nav className="sticky top-0 z-[100] bg-white dark:bg-[#1a1a1a] border-b border-[#808080]/20 dark:border-[#333] transition-colors duration-200 shrink-0">
+        <div className="w-full px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
@@ -120,7 +122,7 @@ export default function App() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 pb-16 md:pb-0">
+      <main className={`flex-1 pb-16 md:pb-0 ${isInternalScrollView ? 'min-h-0 lg:overflow-hidden flex flex-col' : ''}`}>
         {renderView()}
       </main>
 

@@ -113,9 +113,9 @@ export default function ProductManager() {
   }
 
   return (
-    <div className="p-4 lg:p-6 max-w-6xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-6xl mx-auto w-full h-full lg:h-[calc(100dvh-64px)] flex flex-col min-h-0 lg:overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 shrink-0">
         <div>
           <h1 className="text-xl font-bold text-[#1a1a1a] dark:text-white">Products</h1>
           <p className="text-sm text-[#808080] dark:text-[#666]">{products.length} items in inventory</p>
@@ -130,7 +130,7 @@ export default function ProductManager() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 shrink-0">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#808080] dark:text-[#666]" />
           <input
@@ -154,64 +154,70 @@ export default function ProductManager() {
       </div>
 
       {/* Product Table */}
-      <div className="border border-[#808080]/20 dark:border-[#333] rounded-[2px] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[#F5F1E8] dark:bg-[#1a1a1a] border-b border-[#808080]/20 dark:border-[#333]">
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666]">Product</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666]">Category</th>
-                <th className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666]">Price</th>
-                <th className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666]">Stock</th>
-                <th className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666]">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+      <div className="border border-[#808080]/20 dark:border-[#333] rounded-[2px] lg:flex-1 min-h-0 flex flex-col overflow-hidden bg-white dark:bg-[#1a1a1a]">
+        <div className="overflow-x-auto lg:flex-1 min-h-0 flex flex-col">
+          <div className="min-w-[640px] lg:flex-1 min-h-0 flex flex-col">
+            {/* Table Header (Fixed outside scrollable area) */}
+            <div className="bg-[#F5F1E8] dark:bg-[#1a1a1a] border-b border-[#808080]/20 dark:border-[#333] shrink-0">
+              <div className="grid grid-cols-[1fr_150px_110px_90px_100px] px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#808080] dark:text-[#666] items-center">
+                <div className="text-left">Product</div>
+                <div className="text-left">Category</div>
+                <div className="text-right">Price</div>
+                <div className="text-right">Stock</div>
+                <div className="text-right">Actions</div>
+              </div>
+            </div>
+
+            {/* Scrollable Rows */}
+            <div className="lg:flex-1 min-h-0 overflow-y-auto divide-y divide-[#808080]/10 dark:divide-[#222]">
               {filteredProducts.map(product => (
-                <tr key={product.id} className="border-b border-[#808080]/10 dark:border-[#222] hover:bg-[#F5F1E8]/50 dark:hover:bg-[#1a1a1a]/50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <ProductImage src={product.image} category={product.category} alt={product.name} size="sm" />
-                      <span className="font-medium text-[#1a1a1a] dark:text-white">{product.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 bg-[#F5F1E8] dark:bg-[#2a2a2a] text-xs rounded-[2px] text-[#808080] dark:text-[#999]">{product.category}</span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono text-[#1a1a1a] dark:text-white">₱{product.price.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right">
+                <div
+                  key={product.id}
+                  className="grid grid-cols-[1fr_150px_110px_90px_100px] px-4 py-3 text-sm items-center hover:bg-[#F5F1E8]/50 dark:hover:bg-[#1a1a1a]/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 pr-2">
+                    <ProductImage src={product.image} category={product.category} alt={product.name} size="sm" />
+                    <span className="font-medium text-[#1a1a1a] dark:text-white truncate">{product.name}</span>
+                  </div>
+                  <div>
+                    <span className="px-2 py-0.5 bg-[#F5F1E8] dark:bg-[#2a2a2a] text-xs rounded-[2px] text-[#808080] dark:text-[#999]">
+                      {product.category}
+                    </span>
+                  </div>
+                  <div className="text-right font-mono text-[#1a1a1a] dark:text-white">
+                    ₱{product.price.toFixed(2)}
+                  </div>
+                  <div className="text-right">
                     <span className={`font-mono ${product.stock <= 5 ? 'text-red-500 font-bold' : product.stock <= 15 ? 'text-[#B38B6D] font-medium' : 'text-[#1a1a1a] dark:text-white'}`}>
                       {product.stock}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEdit(product)}
-                        className="w-7 h-7 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#808080] dark:text-[#999] transition-colors"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        className="w-7 h-7 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-800 text-[#808080] dark:text-[#999] hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => openEdit(product)}
+                      className="w-7 h-7 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-[#F5F1E8] dark:hover:bg-[#2a2a2a] text-[#808080] dark:text-[#999] transition-colors"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="w-7 h-7 flex items-center justify-center border border-[#808080]/30 dark:border-[#444] rounded-[2px] hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-800 text-[#808080] dark:text-[#999] hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
 
-        {filteredProducts.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-[#808080] dark:text-[#666]">
-            <Package className="w-10 h-10 mb-2 opacity-30" />
-            <p className="text-sm">No products found</p>
+              {filteredProducts.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 text-[#808080] dark:text-[#666]">
+                  <Package className="w-10 h-10 mb-2 opacity-30" />
+                  <p className="text-sm">No products found</p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Add/Edit Modal */}

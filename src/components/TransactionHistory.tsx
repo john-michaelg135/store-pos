@@ -50,15 +50,15 @@ export default function TransactionHistory() {
   }
 
   return (
-    <div className="p-4 lg:p-6 max-w-4xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-4xl mx-auto w-full h-full lg:h-[calc(100dvh-64px)] flex flex-col min-h-0 lg:overflow-hidden">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 shrink-0">
         <h1 className="text-xl font-bold text-[#1a1a1a] dark:text-white">Transaction History</h1>
         <p className="text-sm text-[#808080] dark:text-[#666]">{transactions.length} total transactions</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 shrink-0">
         <div className="p-4 border border-[#808080]/20 dark:border-[#333] rounded-[2px] bg-white dark:bg-[#1a1a1a]">
           <p className="text-xs text-[#808080] dark:text-[#666] uppercase tracking-wider">Today Sales</p>
           <p className="text-xl font-bold mt-1 text-[#1a1a1a] dark:text-white">₱{stats.todayTotal.toFixed(2)}</p>
@@ -78,7 +78,7 @@ export default function TransactionHistory() {
       </div>
 
       {/* Filter */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-4 shrink-0">
         <Filter className="w-4 h-4 text-[#808080] dark:text-[#666]" />
         <select
           value={dateFilter}
@@ -93,7 +93,7 @@ export default function TransactionHistory() {
       </div>
 
       {/* Transactions List */}
-      <div className="space-y-2">
+      <div className="space-y-2 lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1 pb-4">
         {filteredTransactions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-[#808080] dark:text-[#666]">
             <Receipt className="w-12 h-12 mb-3 opacity-30" />
