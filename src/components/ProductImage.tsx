@@ -1,3 +1,5 @@
+import { Package } from 'lucide-react';
+
 interface ProductImageProps {
   src?: string;
   category: string;
@@ -30,6 +32,18 @@ function getCategoryColor(category: string): { bg: string; fg: string } {
   }
   if (normalized.includes('staple') || normalized.includes('rice')) {
     return { bg: '#FFF8E1', fg: '#FFC107' };
+  }
+  if (normalized.includes('clean') || normalized.includes('detergent')) {
+    return { bg: '#E0F2F1', fg: '#00897B' };
+  }
+  if (normalized.includes('person') || normalized.includes('toilet') || normalized.includes('hygiene') || normalized.includes('bath')) {
+    return { bg: '#FCE4EC', fg: '#D81B60' };
+  }
+  if (normalized.includes('medic') || normalized.includes('pharma') || normalized.includes('health') || normalized.includes('pill') || normalized.includes('drug')) {
+    return { bg: '#FFEBEE', fg: '#E53935' };
+  }
+  if (normalized.includes('other') || normalized.includes('misc')) {
+    return { bg: '#ECEFF1', fg: '#607D8B' };
   }
   return { bg: '#F5F1E8', fg: '#B38B6D' };
 }
@@ -95,6 +109,42 @@ function getCategoryIcon(category: string): JSX.Element {
       </svg>
     );
   }
+  if (normalized.includes('clean') || normalized.includes('detergent')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={fg} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 4h-2a2 2 0 00-2 2v1h6V6a2 2 0 00-2-2z" />
+        <path d="M10 7H7l-2 2h5" />
+        <path d="M9 11h6v9a2 2 0 01-2 2h-2a2 2 0 01-2-2v-9z" />
+        <path d="M18 4l2-1" />
+        <path d="M19 8h2" />
+      </svg>
+    );
+  }
+  if (normalized.includes('person') || normalized.includes('toilet') || normalized.includes('hygiene') || normalized.includes('bath')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={fg} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="7" y="10" width="10" height="11" rx="2" />
+        <path d="M10 10V7a2 2 0 012-2h2" />
+        <path d="M12 4V2" />
+        <path d="M10 2h4" />
+        <path d="M10 15h4" />
+      </svg>
+    );
+  }
+  if (normalized.includes('medic') || normalized.includes('pharma') || normalized.includes('health') || normalized.includes('pill') || normalized.includes('drug')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={fg} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="6" y="8" width="12" height="13" rx="2" />
+        <path d="M9 4h6v4H9z" />
+        <path d="M12 11v6" />
+        <path d="M9 14h6" />
+      </svg>
+    );
+  }
+  if (normalized.includes('other') || normalized.includes('misc')) {
+    return <Package className="w-6 h-6" stroke={fg} strokeWidth={1.5} />;
+  }
+
   // Default
   return (
     <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={fg} strokeWidth="1.5">

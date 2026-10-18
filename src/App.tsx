@@ -7,6 +7,7 @@ import POSView from './components/POSView';
 import ProductManager from './components/ProductManager';
 import TransactionHistory from './components/TransactionHistory';
 import Dashboard from './components/Dashboard';
+import TindahanLogo from './components/TindahanLogo';
 
 const navItems: { id: View; label: string; icon: typeof ShoppingCart }[] = [
   { id: 'pos', label: 'POS', icon: ShoppingCart },
@@ -42,10 +43,8 @@ export default function App() {
         <div className="w-full px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#000] dark:bg-white rounded-[2px] flex items-center justify-center transition-colors">
-                <span className="text-white dark:text-[#000] text-xs font-bold">T</span>
-              </div>
+            <div className="flex items-center gap-2.5">
+              <TindahanLogo className="w-8 h-8" />
               <div>
                 <h1 className="text-sm font-bold tracking-tight text-[#1a1a1a] dark:text-white transition-colors">TINDAHAN</h1>
                 <p className="text-[10px] text-[#808080] dark:text-[#777] uppercase tracking-wider">Sari Sari Store POS</p>

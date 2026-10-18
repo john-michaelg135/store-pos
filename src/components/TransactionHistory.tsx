@@ -1,12 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Clock, Receipt, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 import { Transaction } from '../types';
 import { getTransactions } from '../store';
 
 export default function TransactionHistory() {
-  const [transactions] = useState<Transaction[]>(getTransactions());
+  const [transactions, setTransactions] = useState<Transaction[]>(getTransactions());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState('all');
+
+  useEffect(() => {
+    const handleSync = () => setTransactions(getTransactions());
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('tindahan:data-imported', handleSync);
+    return () => {
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('tindahan:data-imported', handleSync);
+    };
+  }, []);
 
   const filteredTransactions = useMemo(() => {
     const now = Date.now();
