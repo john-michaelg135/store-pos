@@ -8,6 +8,7 @@ import ProductManager from './components/ProductManager';
 import TransactionHistory from './components/TransactionHistory';
 import Dashboard from './components/Dashboard';
 import TindahanLogo from './components/TindahanLogo';
+import UpdatePrompt from './components/UpdatePrompt';
 
 const navItems: { id: View; label: string; icon: typeof ShoppingCart }[] = [
   { id: 'pos', label: 'POS', icon: ShoppingCart },
@@ -147,6 +148,9 @@ export default function App() {
           })}
         </div>
       </div>
+
+      {/* PWA Update & Offline Banner */}
+      <UpdatePrompt />
     </div>
   );
 }

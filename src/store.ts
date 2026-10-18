@@ -1,4 +1,5 @@
 import { Product, Transaction, StoreBackup, ImportResult } from './types';
+import { queueMutation } from './services/offlineSync';
 
 const PRODUCTS_KEY = 'tindahan_products';
 const TRANSACTIONS_KEY = 'tindahan_transactions';
@@ -72,16 +73,19 @@ export function getProducts(): Product[] {
 
 export function saveProducts(products: Product[]): void {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  queueMutation('SAVE_PRODUCT', { count: products.length });
 }
 
 export function clearAllProducts(): void {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
+  queueMutation('CLEAR_DATA', { target: 'products' });
   window.dispatchEvent(new Event('storage'));
   window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
 }
 
 export function clearTransactions(): void {
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify([]));
+  queueMutation('CLEAR_DATA', { target: 'transactions' });
   window.dispatchEvent(new Event('storage'));
   window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
 }
@@ -89,12 +93,14 @@ export function clearTransactions(): void {
 export function clearAllStoreData(): void {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify([]));
+  queueMutation('CLEAR_DATA', { target: 'all' });
   window.dispatchEvent(new Event('storage'));
   window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
 }
 
 export function loadDemoProducts(): Product[] {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaultProducts));
+  queueMutation('SAVE_PRODUCT', { count: defaultProducts.length, isDemo: true });
   window.dispatchEvent(new Event('storage'));
   window.dispatchEvent(new CustomEvent('tindahan:data-imported'));
   return defaultProducts;
@@ -110,6 +116,7 @@ export function saveTransaction(transaction: Transaction): void {
   const transactions = getTransactions();
   transactions.unshift(transaction);
   localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
+  queueMutation('RECORD_TRANSACTION', { id: transaction.id, total: transaction.total, itemsCount: transaction.items.length });
 }
 
 export function generateId(): string {

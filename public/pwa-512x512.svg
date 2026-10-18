@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" fill="#121212"/>
+  <!-- Tindahan Store Awning ("T" top bar) -->
+  <path d="M96 136h320l-32 88H128L96 136z" fill="#FFFFFF"/>
+  <!-- Warm Terracotta Center Ribbon Accent -->
+  <path d="M227.2 136h57.6l-8 88h-41.6l-8-88z" fill="#B38B6D"/>
+  <!-- Vertical Pillar ("T" stem) -->
+  <rect x="228" y="248" width="56" height="104" rx="8" fill="#FFFFFF"/>
+  <!-- Serving Counter Ledge -->
+  <rect x="168" y="371.2" width="176" height="24" rx="12" fill="#B38B6D"/>
+</svg>
